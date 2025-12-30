@@ -1,0 +1,184 @@
+$primary-color: #0d51fb;
+$secondary-color: #ffffff;
+$background-color: #343537;
+
+/* NAVBAR */
+.navbar {
+  width: 100%;
+  background-color: $background-color;
+  color: $secondary-color;
+}
+
+/* CONTAINER */
+.nav-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+/* LOGO + MENU */
+.logo-sec {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* LOGO */
+.nav-logo {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: $secondary-color;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+/* MENU */
+.nav-menu {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+
+  li {
+    a {
+      color: $secondary-color;
+      text-decoration: none;
+      padding: 0.3rem 0.5rem;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: $primary-color;
+      }
+    }
+  }
+}
+
+/* SEARCH BAR WRAPPER */
+.search-bar {
+  flex: 1;
+  max-width: 400px;
+}
+
+/* ICONS */
+.nav-icons {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+/* CART */
+.nav-i {
+  cursor: pointer;
+
+  p {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 1rem;
+  }
+}
+
+/* CART COUNT */
+.red-count {
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+/* LINKS SAFETY */
+.navbar a {
+  color: $secondary-color;
+  text-decoration: none;
+}
+
+/* ============================================
+   RESPONSIVE MEDIA QUERIES
+   ============================================ */
+
+/* TABLET (768px and below) */
+@media (max-width: 968px) {
+  .nav-container {
+    padding: 1rem 1.5rem;
+    gap: 1.5rem;
+  }
+
+  /* Hide menu on tablet */
+  .nav-menu {
+    display: none;
+  }
+
+  /* Search bar takes more space */
+  .search-bar {
+    max-width: 300px;
+  }
+
+  .nav-logo {
+    font-size: 1.3rem;
+  }
+}
+
+/* MOBILE (640px and below) */
+@media (max-width: 640px) {
+  .nav-container {
+    padding: 1rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  /* Logo section takes full width */
+  .logo-sec {
+    flex: 1;
+    gap: 1rem;
+  }
+
+  .nav-logo {
+    font-size: 1.2rem;
+  }
+
+  /* Search bar moves to new row and takes full width */
+  .search-bar {
+    order: 3;
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+
+  /* Icons stay on top row */
+  .nav-icons {
+    gap: 1rem;
+  }
+
+  .nav-i p {
+    font-size: 0.9rem;
+  }
+}
+
+/* SMALL MOBILE (480px and below) */
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 0.75rem;
+  }
+
+  .nav-logo {
+    font-size: 1.1rem;
+  }
+
+  .nav-icons {
+    gap: 0.75rem;
+  }
+
+  .nav-i p {
+    font-size: 0.85rem;
+  }
+
+  .red-count {
+    padding: 0.1rem 0.35rem;
+    font-size: 0.7rem;
+  }
+}

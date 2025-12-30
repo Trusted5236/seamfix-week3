@@ -1,0 +1,26 @@
+$primary-color: #0d51fb;
+$secondary-color: white;
+$background-color: #343537;
+
+
+.searchbar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    input {
+        width: 100%;
+        padding: 0.5rem 1rem;
+        border: none;
+        border-radius: 5px;
+        font-size: 1rem;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        transition: box-shadow 0.3s;
+
+        &:focus {
+            box-shadow: 0 0 10px $primary-color;
+        }
+    }
+}

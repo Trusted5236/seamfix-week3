@@ -1,0 +1,36 @@
+<nav class="navbar">
+    <div class="nav-container">
+        <div class="logo-sec">
+            <a href="#" class="nav-logo">
+            LUXE BRANDS
+        </a>
+        <ul class="nav-menu">
+            <li class="nav-item">
+                <a href="#" class="nav-link">Women</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Men</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Kids</a>
+            </li>
+            <li class="nav-item">
+                <a href="#" class="nav-link">Accessories</a>
+            </li>
+        </ul>
+
+        </div>
+
+        <div class="search-bar">
+            <app-search-bar
+            (searchChange) = 'onSearchEmit($event)'
+            ></app-search-bar>
+        </div> 
+
+        <div class="nav-icons">
+        <div class="nav-i">
+            <p>🛒 Cart <span class="red-count">{{cartCount}}</span></p>
+        </div>
+        </div>
+  </div>
+</nav>
