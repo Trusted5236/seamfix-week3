@@ -1,14 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
-import { ProductService } from '../services/product.service';
-import { SearchService } from '../services/search.service.ts.service';
-import { Product } from '../models/product.models';
+import { FormsModule } from '@angular/forms';
+import { ProductService } from '../../services/product.service';
+import { Product } from '../../models/product.models';
 import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-product-list',
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './product-list.component.html',
   styleUrl: './product-list.component.scss'
 })
@@ -19,14 +19,10 @@ export class ProductListComponent implements OnInit, OnDestroy {
   loading: boolean = true;
   private destroy$ = new Subject<void>();
 
-  constructor(
-    public productService: ProductService,
-    private searchService: SearchService
-  ) {}
+  constructor(public productService: ProductService) {}
 
   ngOnInit(): void {
     this.loadProducts();
-    this.subscribeToSearch();
   }
 
   ngOnDestroy(): void {
@@ -50,23 +46,13 @@ export class ProductListComponent implements OnInit, OnDestroy {
       });
   }
 
-  subscribeToSearch(): void {
-    this.searchService.searchTerm$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(term => {
-        this.searchTerm = term;
-        this.filterProducts(term);
-      });
-  }
-
-  filterProducts(term: string): void {
-    if (!term || term.trim() === '') {
+  onSearch(): void {
+    if (this.searchTerm === '') {
       this.filteredProducts = [...this.products];
     } else {
-      const searchLower = term.toLowerCase();
       this.filteredProducts = this.products.filter(product =>
-        product.name.toLowerCase().includes(searchLower) ||
-        product.description.toLowerCase().includes(searchLower)
+        product.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
+        product.description.toLowerCase().includes(this.searchTerm.toLowerCase())
       );
     }
   }

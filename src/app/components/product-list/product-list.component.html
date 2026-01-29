@@ -1,8 +1,22 @@
 <div class="product-list-container">
   
-  <!-- Search Results Info (only shown when searching from navbar) -->
-  <div class="search-info" *ngIf="searchTerm">
-    <p>Showing {{ filteredProducts.length }} results for "{{ searchTerm }}"</p>
+  <!-- Search Bar Section -->
+  <div class="search-section">
+    <div class="search-wrapper">
+      <input 
+        type="text" 
+        class="search-input"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="Search for products..."
+      />
+      <span class="search-icon">🔍</span>
+    </div>
+    
+    <!-- Search Results Info -->
+    <div class="search-info" *ngIf="searchTerm">
+      <p>Showing {{ filteredProducts.length }} results for "{{ searchTerm }}"</p>
+    </div>
   </div>
 
   <!-- Loading State -->
@@ -66,8 +80,10 @@
   <div class="no-results" *ngIf="!loading && filteredProducts.length === 0">
     <div class="no-results-icon">🔍</div>
     <h3>No products found</h3>
-    <p *ngIf="searchTerm">No products match your search "{{ searchTerm }}"</p>
-    <p *ngIf="!searchTerm">No products available at the moment.</p>
+    <p>No products match your search "{{ searchTerm }}"</p>
+    <button class="btn-clear" (click)="searchTerm = ''; onSearch()">
+      Clear Search
+    </button>
   </div>
 
 </div>

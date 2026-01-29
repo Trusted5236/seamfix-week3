@@ -1,24 +1,29 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #fafafa;
+}
 
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0;
+  min-height: calc(100vh - 80px);
+}
 
-.product-grid {
-  max-width: 1200px;
-  margin: 2rem auto;
-  padding: 0 2rem;
-  
-  display: grid;
-  grid-template-columns: repeat(3, 1fr); // 3 columns on desktop
-  gap: 2rem;
-  
-  // Tablet - 2 columns
-  @media (max-width: 968px) {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-  }
-  
-  // Mobile - 1 column
-  @media (max-width: 640px) {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-    padding: 0 1rem;
-  }
+// Global Styles (add to src/styles.scss)
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 
+               'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 
+               'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #fafafa;
+  color: #333;
 }

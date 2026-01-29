@@ -1,13 +1,7 @@
 <app-navbar
-[cartCount] = "cart.length"
-(search) = "onSearch($event)"
-></app-navbar>
+  [cartCount]="cartItemCount">
+</app-navbar>
 
-<div class="product-grid">
-    <app-products-card
-    *ngFor="let product of filteredProducts"
-    [product]="product"
-    [isSelected]="isSelected(product.id)"
-    (productClick)="onProductSelect($event)">
-></app-products-card>
-</div>
+<main class="container mt-4">
+    <router-outlet></router-outlet>
+</main>
