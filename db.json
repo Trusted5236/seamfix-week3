@@ -1,7 +1,7 @@
 {
   "products": [
     {
-      "id": 1,
+      "id": "1",
       "name": "Wireless Headphones",
       "description": "High‑quality Bluetooth over‑ear headphones with noise cancellation.",
       "price": 199.99,
@@ -10,7 +10,7 @@
       "rating": 4.5
     },
     {
-      "id": 2,
+      "id": "2",
       "name": "Classic Leather Wallet",
       "description": "Handmade genuine leather wallet with RFID protection.",
       "price": 49.99,
@@ -19,7 +19,7 @@
       "rating": 4
     },
     {
-      "id": 3,
+      "id": "3",
       "name": "Smartwatch",
       "description": "Fitness tracking smartwatch with heart rate monitor. Very durable.",
       "price": 149.99,
@@ -28,7 +28,7 @@
       "rating": 4.3
     },
     {
-      "id": 4,
+      "id": "4",
       "name": "Coffee Maker",
       "description": "12‑cup programmable coffee maker with auto shut‑off.",
       "price": 59.95,
@@ -37,7 +37,7 @@
       "rating": 4.1
     },
     {
-      "id": 5,
+      "id": "5",
       "name": "Backpack",
       "description": "Durable travel backpack with multiple compartments.",
       "price": 69.99,
@@ -46,7 +46,7 @@
       "rating": 4.4
     },
     {
-      "id": 6,
+      "id": "6",
       "name": "Desk Lamp",
       "description": "Adjustable LED desk lamp with touch controls. DC and AC.",
       "price": 34.5,

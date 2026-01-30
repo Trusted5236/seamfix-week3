@@ -10,13 +10,11 @@ export class ProductService {
   private apiUrl = 'http://localhost:3000/products';
   private cartKey = 'cart';
   
-  // BehaviorSubject to store cart items (reactive state management)
   private cartItems = new BehaviorSubject<number[]>(this.loadCartFromStorage());
   cartItems$ = this.cartItems.asObservable();
 
   constructor(private http: HttpClient) { }
 
-  // Load cart from localStorage on service initialization
   private loadCartFromStorage(): number[] {
     const cart = localStorage.getItem(this.cartKey);
     const loadedCart = cart ? JSON.parse(cart) : [];
@@ -24,28 +22,28 @@ export class ProductService {
     return loadedCart;
   }
 
-  // Save cart to localStorage
   private saveCartToStorage(cart: number[]): void {
     localStorage.setItem(this.cartKey, JSON.stringify(cart));
     console.log('Cart saved to localStorage:', cart);
   }
 
-  // Get all products from API
   getAllProducts(): Observable<Product[]> {
     return this.http.get<Product[]>(this.apiUrl); 
   }
 
-  // Get single product by ID
   getProductById(id: number): Observable<Product> {
     return this.http.get<Product>(`${this.apiUrl}/${id}`);
   }
 
-  // Check if product is in cart
+  // NEW METHOD - accepts partial product (without id) and returns full product (with id)
+  createProduct(product: Omit<Product, 'id'>): Observable<Product> {
+    return this.http.post<Product>(this.apiUrl, product);
+  }
+
   isInCart(productId: number): boolean {
     return this.cartItems.value.includes(productId);
   }
 
-  // Add product to cart
   addToCart(productId: number): void {
     const currentCart = this.cartItems.value;
     if (!currentCart.includes(productId)) {
@@ -58,7 +56,6 @@ export class ProductService {
     }
   }
 
-  // Remove product from cart
   removeFromCart(productId: number): void {
     const currentCart = this.cartItems.value.filter(id => id !== productId);
     this.cartItems.next(currentCart);
@@ -66,19 +63,16 @@ export class ProductService {
     console.log('Product removed from cart:', productId);
   }
 
-  // Get cart items (returns the IDs)
   getCartItems(): number[] {
     return this.cartItems.value;
   }
 
-  // Clear entire cart
   clearCart(): void {
     this.cartItems.next([]);
     localStorage.removeItem(this.cartKey);
     console.log('Cart cleared');
   }
 
-  // Get cart count (useful for badge on cart icon)
   getCartCount(): number {
     return this.cartItems.value.length;
   }

@@ -1,89 +1,79 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
-import { ProductService } from '../services/product.service';
-import { SearchService } from '../services/search.service.ts.service';
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { Product } from '../models/product.models';
-import { Subject, takeUntil } from 'rxjs';
 
-@Component({
-  selector: 'app-product-list',
-  imports: [CommonModule, RouterLink],
-  templateUrl: './product-list.component.html',
-  styleUrl: './product-list.component.scss'
+@Injectable({
+  providedIn: 'root'
 })
-export class ProductListComponent implements OnInit, OnDestroy {
-  products: Product[] = [];
-  filteredProducts: Product[] = [];
-  searchTerm: string = '';
-  loading: boolean = true;
-  private destroy$ = new Subject<void>();
+export class ProductService {
+  private apiUrl = 'http://localhost:3000/products';
+  private cartKey = 'cart';
+  
+  private cartItems = new BehaviorSubject<number[]>(this.loadCartFromStorage());
+  cartItems$ = this.cartItems.asObservable();
 
-  constructor(
-    public productService: ProductService,
-    private searchService: SearchService
-  ) {}
+  constructor(private http: HttpClient) { }
 
-  ngOnInit(): void {
-    this.loadProducts();
-    this.subscribeToSearch();
+  private loadCartFromStorage(): number[] {
+    const cart = localStorage.getItem(this.cartKey);
+    const loadedCart = cart ? JSON.parse(cart) : [];
+    console.log('Cart loaded from localStorage:', loadedCart);
+    return loadedCart;
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  private saveCartToStorage(cart: number[]): void {
+    localStorage.setItem(this.cartKey, JSON.stringify(cart));
+    console.log('Cart saved to localStorage:', cart);
   }
 
-  loadProducts(): void {
-    this.productService.getAllProducts()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => {
-          this.products = data;
-          this.filteredProducts = data;
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Error fetching products:', err);
-          this.loading = false;
-        }
-      });
+  getAllProducts(): Observable<Product[]> {
+    return this.http.get<Product[]>(this.apiUrl); 
   }
 
-  subscribeToSearch(): void {
-    this.searchService.searchTerm$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(term => {
-        this.searchTerm = term;
-        this.filterProducts(term);
-      });
+  getProductById(id: number): Observable<Product> {
+    return this.http.get<Product>(`${this.apiUrl}/${id}`);
   }
 
-  filterProducts(term: string): void {
-    if (!term || term.trim() === '') {
-      this.filteredProducts = [...this.products];
+  // NEW METHOD FOR CREATING PRODUCTS
+  createProduct(product: Product): Observable<Product> {
+    return this.http.post<Product>(this.apiUrl, product);
+  }
+
+  isInCart(productId: number): boolean {
+    return this.cartItems.value.includes(productId);
+  }
+
+  addToCart(productId: number): void {
+    const currentCart = this.cartItems.value;
+    if (!currentCart.includes(productId)) {
+      const newCart = [...currentCart, productId];
+      this.cartItems.next(newCart);
+      this.saveCartToStorage(newCart);
+      console.log('Product added to cart:', productId);
     } else {
-      const searchLower = term.toLowerCase();
-      this.filteredProducts = this.products.filter(product =>
-        product.name.toLowerCase().includes(searchLower) ||
-        product.description.toLowerCase().includes(searchLower)
-      );
+      console.log('Product already in cart:', productId);
     }
   }
 
-  onProductSelect(product: Product, event: Event): void {
-    // Prevent navigation when clicking the select button
-    event.stopPropagation();
-    event.preventDefault();
-    
-    if (this.isSelected(product.id)) {
-      this.productService.removeFromCart(product.id);
-    } else {
-      this.productService.addToCart(product.id);
-    }
+  removeFromCart(productId: number): void {
+    const currentCart = this.cartItems.value.filter(id => id !== productId);
+    this.cartItems.next(currentCart);
+    this.saveCartToStorage(currentCart);
+    console.log('Product removed from cart:', productId);
   }
 
-  isSelected(productId: number): boolean {
-    return this.productService.isInCart(productId);
+  getCartItems(): number[] {
+    return this.cartItems.value;
+  }
+
+  clearCart(): void {
+    this.cartItems.next([]);
+    localStorage.removeItem(this.cartKey);
+    console.log('Cart cleared');
+  }
+
+  getCartCount(): number {
+    return this.cartItems.value.length;
   }
 }
