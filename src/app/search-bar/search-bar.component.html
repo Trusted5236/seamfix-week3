@@ -1,6 +1,17 @@
-<div class="searchbar">
-    <input type="text" 
-    [(ngModel)] = "searchQuery" 
-    (input)="onSearchChange()" 
-    placeholder="Search for products, brands and more">
+<div class="search-bar-container">
+  <input 
+    type="text" 
+    class="search-input"
+    [(ngModel)]="searchTerm"
+    (input)="onSearchInput()"
+    placeholder="Search products..."
+  />
+  <button 
+    *ngIf="searchTerm" 
+    class="clear-btn"
+    (click)="clearSearch()"
+  >
+    ✕
+  </button>
+
 </div>

@@ -1,36 +1,30 @@
 <nav class="navbar">
     <div class="nav-container">
         <div class="logo-sec">
-            <a href="#" class="nav-logo">
-            LUXE BRANDS
-        </a>
-        <ul class="nav-menu">
-            <li class="nav-item">
-                <a href="#" class="nav-link">Women</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">Men</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">Kids</a>
-            </li>
-            <li class="nav-item">
-                <a href="#" class="nav-link">Accessories</a>
-            </li>
-        </ul>
-
+            <a routerLink="/products" class="nav-logo">
+                LUXE BRANDS
+            </a>
+            
         </div>
-
-        <div class="search-bar">
-            <app-search-bar
-            (searchChange) = 'onSearchEmit($event)'
-            ></app-search-bar>
-        </div> 
+<ul class="nav-menu">
+                <li class="nav-item">
+                    <a routerLink="/products" class="nav-link" routerLinkActive="active">Women</a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/products" class="nav-link" routerLinkActive="active">Men</a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/products" class="nav-link" routerLinkActive="active">Kids</a>
+                </li>
+                <li class="nav-item">
+                    <a routerLink="/products" class="nav-link" routerLinkActive="active">Accessories</a>
+                </li>
+            </ul>
 
         <div class="nav-icons">
-        <div class="nav-i">
-            <p>🛒 Cart <span class="red-count">{{cartCount}}</span></p>
+            <div class="nav-i" routerLink="/cart">
+                <p>🛒 Cart <span class="red-count" *ngIf="cartCount > 0">{{cartCount}}</span></p>
+            </div>
         </div>
-        </div>
-  </div>
+    </div>
 </nav>

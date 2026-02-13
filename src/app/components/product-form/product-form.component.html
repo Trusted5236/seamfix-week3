@@ -1,0 +1,159 @@
+<div class="form-container">
+  <h2>Create New Product</h2>
+  
+  <div *ngIf="successMessage" class="success-message" [class.error]="successMessage.includes('Error')">
+    {{ successMessage }}
+  </div>
+
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
+    
+    <div class="form-group">
+      <label for="name">Product Name *</label>
+      <input 
+        type="text" 
+        id="name" 
+        formControlName="name" 
+        placeholder="Enter product name"
+        [class.invalid]="isFieldInvalid('name')">
+      <span class="error-message" *ngIf="isFieldInvalid('name')">
+        {{ getErrorMessage('name') }}
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="description">Description *</label>
+      <textarea 
+        id="description" 
+        formControlName="description" 
+        rows="4"
+        placeholder="Enter product description (min 10 characters)"
+        [class.invalid]="isFieldInvalid('description')"></textarea>
+      <span class="error-message" *ngIf="isFieldInvalid('description')">
+        {{ getErrorMessage('description') }}
+      </span>
+    </div>
+
+    <div class="form-group">
+      <label for="price">Price *</label>
+      <input 
+        type="number" 
+        id="price" 
+        formControlName="price" 
+        placeholder="Enter price (min 50)"
+        [class.invalid]="isFieldInvalid('price')">
+      <span class="error-message" *ngIf="isFieldInvalid('price')">
+        {{ getErrorMessage('price') }}
+      </span>
+    </div>
+
+    <!-- <div class="form-group">
+      <label for="category">Category *</label>
+      <select 
+        id="category" 
+        formControlName="category"
+        [class.invalid]="isFieldInvalid('category')">
+        <option value="">Select a category</option>
+        <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+      </select>
+      <span class="error-message" *ngIf="isFieldInvalid('category')">
+        {{ getErrorMessage('category') }}
+      </span>
+    </div> -->
+
+    <div class="form-group">
+      <label for="imageUrl">Image URL *</label>
+      <input 
+        type="text" 
+        id="imageUrl" 
+        formControlName="imageUrl" 
+        placeholder="https://example.com/image.jpg"
+        [class.invalid]="isFieldInvalid('imageUrl')">
+      <span class="error-message" *ngIf="isFieldInvalid('imageUrl')">
+        {{ getErrorMessage('imageUrl') }}
+      </span>
+    </div>
+
+    <div class="form-group checkbox-group">
+      <label for="inStock">
+        <input 
+          type="checkbox" 
+          id="inStock" 
+          formControlName="inStock">
+        In Stock
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="rating">Rating (0-5)</label>
+      <input 
+        type="number" 
+        id="rating" 
+        formControlName="rating" 
+        min="0" 
+        max="5" 
+        step="0.1"
+        placeholder="Enter rating"
+        [class.invalid]="isFieldInvalid('rating')">
+      <span class="error-message" *ngIf="isFieldInvalid('rating')">
+        {{ getErrorMessage('rating') }}
+      </span>
+    </div>
+
+    <!-- <div class="properties-section">
+      <h3>Product Properties</h3>
+      
+      <div formArrayName="properties">
+        <div *ngFor="let property of properties.controls; let i = index" class="property-group" [formGroupName]="i">
+          <div class="property-fields">
+            <div class="form-group">
+              <label [for]="'color-' + i">Color *</label>
+              <input 
+                type="text" 
+                [id]="'color-' + i" 
+                formControlName="color" 
+                placeholder="Enter color"
+                [class.invalid]="isPropertyFieldInvalid(i, 'color')">
+              <span class="error-message" *ngIf="isPropertyFieldInvalid(i, 'color')">
+                Color is required
+              </span>
+            </div>
+
+            <div class="form-group">
+              <label [for]="'weight-' + i">Weight *</label>
+              <input 
+                type="text" 
+                [id]="'weight-' + i" 
+                formControlName="weight" 
+                placeholder="Enter weight"
+                [class.invalid]="isPropertyFieldInvalid(i, 'weight')">
+              <span class="error-message" *ngIf="isPropertyFieldInvalid(i, 'weight')">
+                Weight is required
+              </span>
+            </div>
+
+            <button 
+              type="button" 
+              class="btn-remove" 
+              (click)="removeProperty(i)"
+              [disabled]="properties.length === 1">
+              Remove
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn-add" (click)="addProperty()">
+        + Add Property
+      </button>
+    </div> -->
+
+    <div class="form-actions">
+      <button type="submit" class="btn-submit" [disabled]="productForm.invalid">
+        Create Product
+      </button>
+      <button type="button" class="btn-cancel" (click)="router.navigate(['/products'])">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>

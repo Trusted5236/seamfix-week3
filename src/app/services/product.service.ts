@@ -35,8 +35,8 @@ export class ProductService {
     return this.http.get<Product>(`${this.apiUrl}/${id}`);
   }
 
-  // NEW METHOD FOR CREATING PRODUCTS
-  createProduct(product: Product): Observable<Product> {
+  // NEW METHOD - accepts partial product (without id) and returns full product (with id)
+  createProduct(product: Omit<Product, 'id'>): Observable<Product> {
     return this.http.post<Product>(this.apiUrl, product);
   }
 
