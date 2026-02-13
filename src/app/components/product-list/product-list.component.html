@@ -22,12 +22,20 @@
     
     <!-- Search Results Info -->
     <div class="search-info" *ngIf="searchTerm">
-      <p>Showing {{ filteredProducts.length }} results for "{{ searchTerm }}"</p>
+      <p>Showing {{ (filteredProducts$ | async)?.length || 0 }} results for "{{ searchTerm }}"</p>
     </div>
   </div>
 
+  <!-- Error State -->
+  <div class="error-state" *ngIf="error$ | async as error">
+    <div class="error-icon">⚠️</div>
+    <h3>Error Loading Products</h3>
+    <p class="error-message">{{ error }}</p>
+    <button class="btn-retry" (click)="loadProducts()">Retry</button>
+  </div>
+
   <!-- Loading State -->
-  <div class="loading-state" *ngIf="loading">
+  <div class="loading-state" *ngIf="loading$ | async">
     <div class="spinner"></div>
     <p>Loading products...</p>
   </div>
@@ -35,14 +43,14 @@
   
 
   <!-- Products Grid -->
-  <div class="products-grid" *ngIf="!loading">
+  <div class="products-grid" *ngIf="!(loading$ | async) && !(error$ | async)">
     <div 
-      *ngFor="let product of filteredProducts"
+      *ngFor="let product of filteredProducts$ | async"
       class="product-wrapper"
     >
       <div 
         class="product-card"
-        [class.selected-card]="isSelected(product.id)"
+        [class.selected-card]="isSelected$(product.id) | async"
         [routerLink]="['/products', product.id]"
         [queryParams]="{ category: product.category }"
       >
@@ -75,18 +83,28 @@
           <!-- Select Button -->
           <button 
             class="select-btn"
-            [class.selected]="isSelected(product.id)"
+            [class.selected]="isSelected$(product.id) | async"
             (click)="onProductSelect(product, $event)"
           >
-            {{ isSelected(product.id) ? '✓ Selected' : 'Select Product' }}
+            {{ (isSelected$(product.id) | async) ? '✓ Selected' : 'Select Product' }}
           </button>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Empty State -->
+  <div class="no-results" *ngIf="!(loading$ | async) && !(error$ | async) && (filteredProducts$ | async)?.length === 0 && !searchTerm">
+    <div class="no-results-icon">📦</div>
+    <h3>No Products Available</h3>
+    <p>Start by creating your first product!</p>
+    <button class="btn-create-product" routerLink="/products/new">
+      + Create Product
+    </button>
+  </div>
+
   <!-- No Results Message -->
-  <div class="no-results" *ngIf="!loading && filteredProducts.length === 0">
+  <div class="no-results" *ngIf="!(loading$ | async) && !(error$ | async) && (filteredProducts$ | async)?.length === 0 && searchTerm">
     <div class="no-results-icon">🔍</div>
     <h3>No products found</h3>
     <p>No products match your search "{{ searchTerm }}"</p>

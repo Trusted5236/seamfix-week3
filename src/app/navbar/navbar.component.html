@@ -25,6 +25,9 @@
             <div class="nav-i" routerLink="/cart">
                 <p>🛒 Cart <span class="red-count" *ngIf="cartCount > 0">{{cartCount}}</span></p>
             </div>
+            <div class="nav-i" *ngIf="authService.isAuthenticated$ | async">
+                <button class="logout-btn" (click)="logout()">Logout</button>
+            </div>
         </div>
     </div>
 </nav>

@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from './navbar/navbar.component';
-import { ProductService } from './services/product.service';
+import { StateService } from './services/state.service';
 import { CommonModule } from '@angular/common';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -15,9 +16,9 @@ import { CommonModule } from '@angular/common';
   styleUrl: './app.component.scss'
 })
 export class AppComponent {
-  constructor(public productService: ProductService) {}
+  cartCount$: Observable<number>;
 
-  get cartItemCount(): number {
-    return this.productService.getCartItems().length;
+  constructor(public stateService: StateService) {
+    this.cartCount$ = this.stateService.cartCount$;
   }
 }

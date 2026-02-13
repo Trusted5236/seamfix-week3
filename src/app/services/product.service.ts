@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 import { Product } from '../models/product.models';
+import { ErrorHandlerService } from './error-handler.service';
+import { StateService } from './state.service';
 
 @Injectable({
   providedIn: 'root'
@@ -9,17 +12,21 @@ import { Product } from '../models/product.models';
 export class ProductService {
   private apiUrl = 'http://localhost:3000/products';
   private cartKey = 'cart';
-  
-  private cartItems = new BehaviorSubject<number[]>(this.loadCartFromStorage());
-  cartItems$ = this.cartItems.asObservable();
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private errorHandler: ErrorHandlerService,
+    private stateService: StateService
+  ) {
+    // Load cart from localStorage and sync with StateService
+    this.loadCartFromStorage();
+  }
 
-  private loadCartFromStorage(): number[] {
+  private loadCartFromStorage(): void {
     const cart = localStorage.getItem(this.cartKey);
     const loadedCart = cart ? JSON.parse(cart) : [];
+    this.stateService.setCart(loadedCart);
     console.log('Cart loaded from localStorage:', loadedCart);
-    return loadedCart;
   }
 
   private saveCartToStorage(cart: number[]): void {
@@ -28,52 +35,64 @@ export class ProductService {
   }
 
   getAllProducts(): Observable<Product[]> {
-    return this.http.get<Product[]>(this.apiUrl); 
+    this.stateService.setLoading(true);
+    this.stateService.clearError();
+    
+    return this.http.get<Product[]>(this.apiUrl).pipe(
+      tap(products => {
+        this.stateService.setProducts(products);
+        this.stateService.setLoading(false);
+      }),
+      catchError(error => {
+        this.stateService.setLoading(false);
+        return this.errorHandler.handleError(error);
+      })
+    );
   }
 
   getProductById(id: number): Observable<Product> {
-    return this.http.get<Product>(`${this.apiUrl}/${id}`);
+    this.stateService.setLoading(true);
+    this.stateService.clearError();
+    
+    return this.http.get<Product>(`${this.apiUrl}/${id}`).pipe(
+      tap(() => this.stateService.setLoading(false)),
+      catchError(error => {
+        this.stateService.setLoading(false);
+        return this.errorHandler.handleError(error);
+      })
+    );
   }
 
-  // NEW METHOD - accepts partial product (without id) and returns full product (with id)
   createProduct(product: Omit<Product, 'id'>): Observable<Product> {
-    return this.http.post<Product>(this.apiUrl, product);
-  }
-
-  isInCart(productId: number): boolean {
-    return this.cartItems.value.includes(productId);
+    this.stateService.setLoading(true);
+    this.stateService.clearError();
+    
+    return this.http.post<Product>(this.apiUrl, product).pipe(
+      tap(newProduct => {
+        this.stateService.addProduct(newProduct);
+        this.stateService.setLoading(false);
+      }),
+      catchError(error => {
+        this.stateService.setLoading(false);
+        return this.errorHandler.handleError(error);
+      })
+    );
   }
 
   addToCart(productId: number): void {
-    const currentCart = this.cartItems.value;
-    if (!currentCart.includes(productId)) {
-      const newCart = [...currentCart, productId];
-      this.cartItems.next(newCart);
-      this.saveCartToStorage(newCart);
-      console.log('Product added to cart:', productId);
-    } else {
-      console.log('Product already in cart:', productId);
-    }
+    this.stateService.addToCart(productId);
+    const cart = this.stateService.getCurrentState().cart;
+    this.saveCartToStorage(cart);
   }
 
   removeFromCart(productId: number): void {
-    const currentCart = this.cartItems.value.filter(id => id !== productId);
-    this.cartItems.next(currentCart);
-    this.saveCartToStorage(currentCart);
-    console.log('Product removed from cart:', productId);
-  }
-
-  getCartItems(): number[] {
-    return this.cartItems.value;
+    this.stateService.removeFromCart(productId);
+    const cart = this.stateService.getCurrentState().cart;
+    this.saveCartToStorage(cart);
   }
 
   clearCart(): void {
-    this.cartItems.next([]);
+    this.stateService.clearCart();
     localStorage.removeItem(this.cartKey);
-    console.log('Cart cleared');
-  }
-
-  getCartCount(): number {
-    return this.cartItems.value.length;
   }
 }

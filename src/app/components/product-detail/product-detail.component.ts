@@ -1,9 +1,10 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ProductService } from '../../services/product.service';
+import { StateService } from '../../services/state.service';
 import { Product } from '../../models/product.models';
-import { Subject, takeUntil } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-product-detail',
@@ -11,21 +12,22 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './product-detail.component.html',
   styleUrl: './product-detail.component.scss'
 })
-export class ProductDetailComponent implements OnInit, OnDestroy {
-  product: Product | null = null;
+export class ProductDetailComponent implements OnInit {
+  product$!: Observable<Product | undefined>;
+  isInCart$!: Observable<boolean>;
+  loading$!: Observable<boolean>;
+  error$!: Observable<string | null>;
   category: string = '';
-  isInCart: boolean = false;
-  loading: boolean = true;
-  private destroy$ = new Subject<void>();
+  productId!: number;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private productService: ProductService
+    private productService: ProductService,
+    private stateService: StateService
   ) {}
 
   ngOnInit(): void {
-    // Get product ID from route parameter
     const idParam = this.route.snapshot.paramMap.get('id');
     
     if (!idParam) {
@@ -33,49 +35,34 @@ export class ProductDetailComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const id = Number(idParam);
+    this.productId = Number(idParam);
 
     // Get category from query parameters
-    this.route.queryParams
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(params => {
-        this.category = params['category'] || 'Unknown';
-      });
+    this.route.queryParams.subscribe(params => {
+      this.category = params['category'] || 'Unknown';
+    });
+
+    // Set observables
+    this.loading$ = this.stateService.loading$;
+    this.error$ = this.stateService.error$;
+    this.product$ = this.stateService.getProductById$(this.productId);
+    this.isInCart$ = this.stateService.isInCart$(this.productId);
 
     // Fetch product by ID from API
-    this.productService.getProductById(id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (data) => {
-          this.product = data;
-          this.isInCart = this.productService.isInCart(id);
-          this.loading = false;
-        },
-        error: (err) => {
-          console.error('Error fetching product:', err);
-          this.loading = false;
-          this.router.navigate(['/not-found']);
-        }
-      });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.productService.getProductById(this.productId).subscribe({
+      error: (err) => {
+        console.error('Error fetching product:', err);
+        this.router.navigate(['/not-found']);
+      }
+    });
   }
 
   addToCart(): void {
-    if (this.product) {
-      this.productService.addToCart(this.product.id);
-      this.isInCart = true;
-    }
+    this.productService.addToCart(this.productId);
   }
 
   removeFromCart(): void {
-    if (this.product) {
-      this.productService.removeFromCart(this.product.id);
-      this.isInCart = false;
-    }
+    this.productService.removeFromCart(this.productId);
   }
 
   goBack(): void {

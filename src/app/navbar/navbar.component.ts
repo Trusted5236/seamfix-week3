@@ -1,6 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-navbar',
@@ -10,4 +11,10 @@ import { CommonModule } from '@angular/common';
 })
 export class NavbarComponent {
   @Input() cartCount: number = 0;
+
+  constructor(public authService: AuthService) {}
+
+  logout(): void {
+    this.authService.logout();
+  }
 }

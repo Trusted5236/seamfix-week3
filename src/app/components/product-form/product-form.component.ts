@@ -3,6 +3,8 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, FormArray, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ProductService } from '../../services/product.service';
+import { StateService } from '../../services/state.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-product-form',
@@ -14,16 +16,20 @@ import { ProductService } from '../../services/product.service';
 export class ProductFormComponent implements OnInit {
   productForm!: FormGroup;
   successMessage: string = '';
+  errorMessage: string = '';
+  loading$!: Observable<boolean>;
   categories: string[] = ['Electronics', 'Clothing', 'Food', 'Books', 'Home & Garden', 'Sports'];
 
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
+    private stateService: StateService,
     public router: Router
   ) {}
 
   ngOnInit(): void {
     this.initializeForm();
+    this.loading$ = this.stateService.loading$;
   }
 
   initializeForm(): void {
@@ -31,11 +37,11 @@ export class ProductFormComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(3)]],
       description: ['', [Validators.required, Validators.minLength(10)]],
       price: ['', [Validators.required, Validators.min(50)]],
-      category: [''],  // Made optional - removed Validators.required
+      category: [''],
       imageUrl: ['', [Validators.required, Validators.pattern(/^https?:\/\/.+/)]],
       inStock: [true],
       rating: [0, [Validators.min(0), Validators.max(5)]],
-      properties: this.fb.array([])  // Empty array - no required properties
+      properties: this.fb.array([])
     });
   }
 
@@ -90,18 +96,20 @@ export class ProductFormComponent implements OnInit {
     if (this.productForm.valid) {
       const formValue = this.productForm.value;
       
-      // Remove properties from the product data
       const { properties, ...productData } = formValue;
       
-      // Remove category if it's empty
       if (!productData.category) {
         delete productData.category;
       }
+      
+      this.successMessage = '';
+      this.errorMessage = '';
       
       this.productService.createProduct(productData).subscribe({
         next: (response) => {
           console.log('Product created successfully:', response);
           this.successMessage = 'Product created successfully!';
+          this.errorMessage = '';
           this.productForm.reset();
           this.initializeForm();
           
@@ -111,7 +119,8 @@ export class ProductFormComponent implements OnInit {
         },
         error: (error) => {
           console.error('Error creating product:', error);
-          this.successMessage = 'Error creating product. Please try again.';
+          this.errorMessage = error.message || 'Error creating product. Please try again.';
+          this.successMessage = '';
         }
       });
     } else {

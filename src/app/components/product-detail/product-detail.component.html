@@ -1,11 +1,19 @@
 <!-- Loading State -->
-<div class="loading-container" *ngIf="loading">
+<div class="loading-container" *ngIf="loading$ | async">
   <div class="spinner"></div>
   <p>Loading product...</p>
 </div>
 
+<!-- Error State -->
+<div class="error-container" *ngIf="error$ | async as error">
+  <div class="error-icon">⚠️</div>
+  <h3>Error Loading Product</h3>
+  <p class="error-message">{{ error }}</p>
+  <button class="btn btn-primary" (click)="goBack()">Back to Products</button>
+</div>
+
 <!-- Product Detail -->
-<div class="product-detail-container" *ngIf="!loading && product">
+<div class="product-detail-container" *ngIf="!(loading$ | async) && !(error$ | async) && (product$ | async) as product">
   <button class="back-button" (click)="goBack()">
     ← Back to Products
   </button>
@@ -38,7 +46,7 @@
       <!-- Action Buttons -->
       <div class="product-actions">
         <button 
-          *ngIf="!isInCart"
+          *ngIf="!(isInCart$ | async)"
           class="btn btn-primary"
           [disabled]="!product.inStock"
           (click)="addToCart()"
@@ -47,7 +55,7 @@
         </button>
 
         <button 
-          *ngIf="isInCart"
+          *ngIf="isInCart$ | async"
           class="btn btn-danger"
           (click)="removeFromCart()"
         >

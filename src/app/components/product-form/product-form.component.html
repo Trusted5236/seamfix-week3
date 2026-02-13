@@ -1,8 +1,17 @@
 <div class="form-container">
   <h2>Create New Product</h2>
   
-  <div *ngIf="successMessage" class="success-message" [class.error]="successMessage.includes('Error')">
+  <div *ngIf="successMessage" class="success-message">
     {{ successMessage }}
+  </div>
+
+  <div *ngIf="errorMessage" class="error-message-box">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="loading$ | async" class="loading-overlay">
+    <div class="spinner"></div>
+    <p>Creating product...</p>
   </div>
 
   <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="product-form">
